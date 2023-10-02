@@ -7,10 +7,13 @@ export interface ContactT {
 }
 interface ContactState {
   contacts: ContactT[];
+  isInputFormOpen:boolean;
 }
 
 const initialState: ContactState = {
   contacts: [],
+  isInputFormOpen:false
+
 };
 
 const contactSlice = createSlice({
@@ -22,7 +25,7 @@ const contactSlice = createSlice({
     },
     editContact: (
       state,
-      action: PayloadAction<{ id: number; name: string; contact: number }>
+      action: PayloadAction<{ id: number; name: string|undefined; contact: number |undefined}>
     ) => {
       const { id, name, contact } = action.payload;
       const contactExist = state.contacts.find(
@@ -33,9 +36,13 @@ const contactSlice = createSlice({
         contactExist.contact = contact;
       }
     },
+    changeIsInputOpen:(state,action:PayloadAction<boolean>)=>{
+      state.isInputFormOpen=action.payload;
+      console.log(action.payload)
+    }
   },
 });
 
-export const {addContact, editContact} = contactSlice.actions;
+export const {addContact, editContact,changeIsInputOpen} = contactSlice.actions;
 export default contactSlice.reducer;
 
