@@ -36,6 +36,11 @@ const contactSlice = createSlice({
         contactExist.contact = contact;
       }
     },
+    deleteContact:(state,action:PayloadAction<number>)=>{
+      state.contacts=state.contacts.filter((value)=>value.id!==action.payload)
+      console.log(state.contacts)
+    }
+    ,
     changeIsInputOpen:(state,action:PayloadAction<boolean>)=>{
       state.isInputFormOpen=action.payload;
       console.log(action.payload)
@@ -43,6 +48,6 @@ const contactSlice = createSlice({
   },
 });
 
-export const {addContact, editContact,changeIsInputOpen} = contactSlice.actions;
+export const {addContact, editContact,changeIsInputOpen,deleteContact} = contactSlice.actions;
 export default contactSlice.reducer;
 

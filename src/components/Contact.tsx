@@ -7,6 +7,7 @@ import {
   editContact,
   changeIsInputOpen,
   ContactT,
+  deleteContact
 } from "../Redux/contactSlice";
 import { ImCross} from 'react-icons/im';
 
@@ -24,7 +25,7 @@ const Contact: React.FC = () => {
         </p>
         {contacts.length ? (
           <section>
-            <main className="flex gap-1 flex-wrap">
+            <main className="flex gap-1 flex-wrap mx-5 justify-center">
               {contacts.map((contact: ContactT) => (
                 <ShowContact key={contact.id} {...contact} />
               ))}
@@ -172,7 +173,7 @@ const ShowContact = (props: ContactT) => {
             >
               Edit
             </button>
-            <button className="p-1 bg-slate-800 rounded-md text-slate-100 px-3 hover:scale-90 transition-all">
+            <button onClick={()=>dispatch(deleteContact(props.id))} className="p-1 bg-slate-800 rounded-md text-slate-100 px-3 hover:scale-90 transition-all">
               Delete
             </button>
           </div>
