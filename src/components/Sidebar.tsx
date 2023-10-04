@@ -12,7 +12,7 @@ const Sidebar = () => {
 <div className={` w-full m-2 pt-4 flex flex-col justify-start align-middle divide-y `}>
 <p className='self-center text-3xl font-medium pb-4 '>Sidebar</p>
 <Link to="/" className='text-2xl hover:text-white self-center cursor-pointer py-2 transition hover:scale-90'>Contact</Link>
-<Link to="ChatsMaps" className='text-2xl py-2 self-center hover:text-white cursor-pointer transition-all hover:scale-90'>Charts and Maps</Link>
+<Link to="ChartsMaps" className='text-2xl py-2 self-center hover:text-white cursor-pointer transition-all hover:scale-90'>Charts and Maps</Link>
 
 </div>
 
