@@ -30,99 +30,122 @@ const ChartsMaps = () => {
     deaths?: chartData;
     recovered?: chartData;
   }
-  /* interface dataSetType {
-    label: string[];
-    dataset: {
-      label: string;
-      data: number[];
-      fill: boolean;
-      borderColor: string;
-      tension: number;
-    };
-  } */
 
   const url = "https://disease.sh/v3/covid-19/";
 
   const [covidStats, setcovidStats] = React.useState<chartType[] | undefined[]>(
     []
   );
-  const [showRecovered, setShowRecovered] = React.useState<boolean>(true);
+  const [showRecovered, setShowRecovered] = React.useState<boolean>(false);
   const [showDeath, setShowDeath] = React.useState<boolean>(false);
-  const [showCases, setShowCases] = React.useState<boolean>(false);
-  const [dataObject, setDataObject] = React.useState<any>({});
+  const [showCases, setShowCases] = React.useState<boolean>(true);
+  const [dataObject, setDataObject] = React.useState<any>(null);
+  const [Loading, setLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     const covidData = fetch(`${url}historical/all?lastdays=all`);
     covidData
       .then((res) => res.json())
       .then((value) => {
-        console.log(Object.values(value.cases));
         setcovidStats(value);
+        setLoading(true);
 
-        const CasesDates: string[] = Object.keys(value.cases);
-        const AllCases: number[] = Object.values(value.cases); //for all covid cases
+       
 
-        const recoveredDates: string[] = Object.keys(value.recovered);
-        const recoveredCases: number[] = Object.values(value.recovered); //for all recovered cases
+        if (value.cases && showCases) {
+          const CasesDates: string[] = Object.keys(value.cases);
+          const AllCases: number[] = Object.values(value.cases); //for all covid cases
 
-        const deathsDates: string[] = Object.keys(value.deaths);
-        const deathsCases: number[] = Object.values(value.deaths); //for all the deaths
+          const labels = CasesDates;
 
-        const dataset = {
-          label: showCases
-            ? CasesDates
-            : showRecovered
-            ? recoveredDates
-            : showDeath
-            ? deathsDates
-            : [],
-          dataset: {
-            label: showCases
-              ? "Cases"
-              : showRecovered
-              ? "Recovered"
-              : showDeath
-              ? "Deaths"
-              : "",
-            data: showCases
-              ? AllCases
-              : showRecovered
-              ? recoveredCases
-              : showDeath
-              ? deathsCases
-              : [],
-            fill: false,
-            borderColor: "rgb(75, 192, 192)",
-            tension: 0.1,
-          },
-        };
-        setDataObject(dataset);
+          const Dataset = {
+            labels,
+            datasets: [
+              {
+                label: "Cases",
+                data: AllCases,
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1,
+              }
+            ],
+          };
+          setDataObject(Dataset);
+          setLoading(false);
+        } else if (value.deaths && showDeath) {
+          const deathsDates: string[] = Object.keys(value.deaths);
+          const deathsCases: number[] = Object.values(value.deaths); //for all covid cases
+
+          const labels = deathsDates;
+
+          const Dataset = {
+            labels,
+            datasets: [
+              {
+                label: "Deaths",
+                data: deathsCases,
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1,
+              },
+            ],
+          };
+          setDataObject(Dataset);
+          setLoading(false);
+        } else if (value.recovered && showRecovered) {
+          const recoveredDates: string[] = Object.keys(value.recovered);
+          const recoveredCases: number[] = Object.values(value.recovered); //for all covid cases
+
+          const labels = recoveredDates;
+
+          const Dataset = {
+            labels,
+            datasets: [
+              {
+                label: "Recovered",
+                data: recoveredCases,
+                fill: false,
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1,
+              },
+            ],
+          };
+          setDataObject(Dataset);
+          setLoading(false);
+        }
       })
       .catch((error) => {
         console.log(error);
       });
-    console.log(covidStats);
   }, [showCases, showRecovered, showDeath]);
 
-  const option = { plugins: {
-    legend: {
-      display: true,
+  console.log(dataObject);
+  const option = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Chart.js Line Chart",
+      },
     },
-  },
-  scales: {
-    y: {},
-  },
   };
 
   return (
-    <main className="w-full text-center h-auto flex flex-col align-middle justify-center gap-2">
-      <Line data={dataObject} options={option}></Line>
-
-      <label>
+    <main className="w-3/4 m-3 text-center h-auto flex flex-col align-middle justify-center mx-auto gap-2">
+      {Loading ? !showCases && !showRecovered && !showDeath &&
+        <p>Select one</p>
+       : (
+        <Line data={dataObject} options={option}></Line>
+      )}
+<div className='flex gap-2 justify-center '>
+      <label className='pe-1'>
         <input
           type="checkbox"
           name="Covid Cases"
-          value="Option 1"
+          checked={showCases }
           onChange={() => {
             setShowCases((value) => !value);
           }}
@@ -130,11 +153,11 @@ const ChartsMaps = () => {
         Covid Cases
       </label>
 
-      <label>
+      <label className='pe-1'>
         <input
           type="checkbox"
           name="Recovered"
-          value="Option 2"
+          checked={showRecovered}
           onChange={() => {
             setShowRecovered((value) => !value);
           }}
@@ -142,17 +165,18 @@ const ChartsMaps = () => {
         Recovered
       </label>
 
-      <label>
+      <label className='pe-1'>
         <input
           type="checkbox"
           name="Deaths"
-          value="Option 2"
+          checked={showDeath}
           onChange={() => {
             setShowDeath((value) => !value);
           }}
         />
         Deaths
       </label>
+      </div>
     </main>
   );
 };

@@ -121,8 +121,8 @@ const ShowContact = (props: ContactT) => {
     props.contact
   );
   const dispatch = useDispatch();
-  console.log(props.contact);
-  console.log(props.name);
+  /* console.log(props.contact);
+  console.log(props.name); */
   const [isEdit, setisEdit] = React.useState<boolean>(false);
 
   const handleEdit = () => {
@@ -136,7 +136,7 @@ const ShowContact = (props: ContactT) => {
       contact: editedContact,
     };
     dispatch(editContact(editedDetails));
-    console.log(editedDetails);
+    /* console.log(editedDetails); */
     setisEdit(false);
   };
 
