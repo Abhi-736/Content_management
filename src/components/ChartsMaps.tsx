@@ -9,7 +9,11 @@ import {
   Tooltip,
 } from "chart.js";
 
+import { useEffect } from "react";
 import React from "react";
+import { useQuery } from "react-query";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
 
 const ChartsMaps = () => {
   ChartJS.register(
@@ -50,8 +54,6 @@ const ChartsMaps = () => {
         setcovidStats(value);
         setLoading(true);
 
-       
-
         if (value.cases && showCases) {
           const CasesDates: string[] = Object.keys(value.cases);
           const AllCases: number[] = Object.values(value.cases); //for all covid cases
@@ -67,7 +69,7 @@ const ChartsMaps = () => {
                 fill: false,
                 borderColor: "rgb(75, 192, 192)",
                 tension: 0.1,
-              }
+              },
             ],
           };
           setDataObject(Dataset);
@@ -119,7 +121,18 @@ const ChartsMaps = () => {
       });
   }, [showCases, showRecovered, showDeath]);
 
-  console.log(dataObject);
+  useEffect(() => {
+    const fetchmapData = async () => {
+      const res = await fetch("https://disease.sh/v3/covid-19/all");
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return res.json();
+    };
+    fetchmapData();
+  });
+
+  /* console.log(dataObject); */
   const option = {
     responsive: true,
     plugins: {
@@ -133,50 +146,96 @@ const ChartsMaps = () => {
     },
   };
 
+  const fetchCountryData = async () => {
+    const response = await fetch("https://disease.sh/v3/covid-19/countries");
+    return response.json();
+  };
+
+  const { data: countryData } = useQuery("countryData", fetchCountryData);
+
+  console.log(countryData)
   return (
     <main className="w-3/4 m-3 text-center h-auto flex flex-col align-middle justify-center mx-auto gap-2">
-      {Loading ? !showCases && !showRecovered && !showDeath &&
-        <p>Select one</p>
-       : (
+      {Loading ? (
+        !showCases && !showRecovered && !showDeath && <p>Select one</p>
+      ) : (
         <Line data={dataObject} options={option}></Line>
       )}
-<div className='flex gap-2 justify-center '>
-      <label className='pe-1'>
-        <input
-          type="checkbox"
-          name="Covid Cases"
-          checked={showCases }
-          onChange={() => {
-            setShowCases((value) => !value);
-          }}
-        />
-        Covid Cases
-      </label>
+      <div className="flex gap-2 justify-center ">
+        <label className="pe-1">
+          <input
+            type="checkbox"
+            name="Covid Cases"
+            checked={showCases}
+            onChange={() => {
+              setShowCases((value) => !value);
+            }}
+          />
+          Covid Cases
+        </label>
 
-      <label className='pe-1'>
-        <input
-          type="checkbox"
-          name="Recovered"
-          checked={showRecovered}
-          onChange={() => {
-            setShowRecovered((value) => !value);
-          }}
-        />
-        Recovered
-      </label>
+        <label className="pe-1">
+          <input
+            type="checkbox"
+            name="Recovered"
+            checked={showRecovered}
+            onChange={() => {
+              setShowRecovered((value) => !value);
+            }}
+          />
+          Recovered
+        </label>
 
-      <label className='pe-1'>
-        <input
-          type="checkbox"
-          name="Deaths"
-          checked={showDeath}
-          onChange={() => {
-            setShowDeath((value) => !value);
-          }}
-        />
-        Deaths
-      </label>
+        <label className="pe-1">
+          <input
+            type="checkbox"
+            name="Deaths"
+            checked={showDeath}
+            onChange={() => {
+              setShowDeath((value) => !value);
+            }}
+          />
+          Deaths
+        </label>
       </div>
+
+     {/*  <MapContainer
+      center={[0, 0]}
+      zoom={2}
+      style={{ height: "500px", width: "100%" }}
+    >
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+      {countryData &&
+        countryData.map((country) => (
+          <Marker
+            key={country.country}
+            position={[country.countryInfo.lat, country.countryInfo.long]}
+          >
+            <Popup>
+              <strong>{country.country}</strong>
+              <br />
+              Total Cases: {country.cases}
+              <br />
+              Active Cases: {country.active}
+              <br />
+              Recovered Cases: {country.recovered}
+              <br />
+              Deaths: {country.deaths}
+            </Popup>
+          </Marker>
+        ))}
+    </MapContainer> */}
+
+
+
+
+
+
+
+
     </main>
   );
 };
