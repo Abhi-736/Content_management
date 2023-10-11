@@ -14,6 +14,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
+import { Icon } from "leaflet";
 
 const ChartsMaps = () => {
   ChartJS.register(
@@ -46,7 +47,7 @@ const ChartsMaps = () => {
   const [dataObject, setDataObject] = React.useState<any>(null);
   const [Loading, setLoading] = React.useState<boolean>(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const covidData = fetch(`${url}historical/all?lastdays=all`);
     covidData
       .then((res) => res.json())
@@ -121,17 +122,6 @@ const ChartsMaps = () => {
       });
   }, [showCases, showRecovered, showDeath]);
 
-  useEffect(() => {
-    const fetchmapData = async () => {
-      const res = await fetch("https://disease.sh/v3/covid-19/all");
-      if (!res.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return res.json();
-    };
-    fetchmapData();
-  });
-
   /* console.log(dataObject); */
   const option = {
     responsive: true,
@@ -146,14 +136,71 @@ const ChartsMaps = () => {
     },
   };
 
+//-----Start Maps------//
+
+  interface CountryInfo {
+    _id: number;
+    iso2: string;
+    iso3: string;
+    lat: number;
+    long: number;
+    flag: string;
+  }
+
+  interface CountryData {
+    updated: number;
+    country: string;
+    countryInfo: CountryInfo;
+    cases: number;
+    todayCases: number;
+    deaths: number;
+    todayDeaths: number;
+    recovered: number;
+    todayRecovered: number;
+    active: number;
+    critical: number;
+    casesPerOneMillion: number;
+    deathsPerOneMillion: number;
+    tests: number;
+    testsPerOneMillion: number;
+    population: number;
+    continent: string;
+    oneCasePerPeople: number;
+    oneDeathPerPeople: number;
+    oneTestPerPeople: number;
+    activePerOneMillion: number;
+    recoveredPerOneMillion: number;
+    criticalPerOneMillion: number;
+  }
+
   const fetchCountryData = async () => {
-    const response = await fetch("https://disease.sh/v3/covid-19/countries");
+    const response = await fetch(`${url}countries`);
+
+    if (!response.ok) {
+      throw new Error("error in fetching data");
+    }
     return response.json();
   };
 
-  const { data: countryData } = useQuery("countryData", fetchCountryData);
+  const {
+    data: countryData,
+    error: mapError,
+    isLoading: mapIsLoaded,
+  } = useQuery("countryData", fetchCountryData);//fetch data using useQuery hook
 
-  console.log(countryData)
+  console.log(countryData);
+
+  const defaultIcon = new Icon({
+    iconUrl:
+      "https://www.iconpacks.net/icons/2/free-location-icon-2955-thumb.png", // Replace with the actual path to your marker icon
+    iconSize: [25, 25], // The size of the icon
+    iconAnchor: [12, 41], // The anchor point of the icon
+    popupAnchor: [1, -34], // The anchor point for popups
+  });// Creating icon for Marker
+
+//--------End Maps---------//
+  
+
   return (
     <main className="w-3/4 m-3 text-center h-auto flex flex-col align-middle justify-center mx-auto gap-2">
       {Loading ? (
@@ -198,44 +245,45 @@ const ChartsMaps = () => {
           Deaths
         </label>
       </div>
+      {mapError ? (
+        <p>Error: {(mapError as Error).message}</p>
+      ) : mapIsLoaded ? (
+        <p>Loading...</p>
+      ) : (<section className="flex-col gap-2">
+        <h2>Map</h2>
+        <MapContainer
+          center={[20.5937, 78.9629]}
+          zoom={2}
+          style={{ height: "500px", width: "100%" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {countryData &&
+            countryData.map((Country: CountryData) => (
+              <Marker
+                key={Country.country}
+                position={[Country.countryInfo.lat, Country.countryInfo.long]}
+                icon={defaultIcon}
+              >
+                <Popup>
+                  <strong>{Country.country}</strong>
+                  <br />
+                  Total Cases: {Country.cases}
+                  <br />
+                  Active Cases: {Country.active}
+                  <br />
+                  Recovered Cases: {Country.recovered}
+                  <br />
+                  Deaths: {Country.deaths}
+                </Popup>
+              </Marker>
+            ))}
+        </MapContainer>
 
-     {/*  <MapContainer
-      center={[0, 0]}
-      zoom={2}
-      style={{ height: "500px", width: "100%" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      {countryData &&
-        countryData.map((country) => (
-          <Marker
-            key={country.country}
-            position={[country.countryInfo.lat, country.countryInfo.long]}
-          >
-            <Popup>
-              <strong>{country.country}</strong>
-              <br />
-              Total Cases: {country.cases}
-              <br />
-              Active Cases: {country.active}
-              <br />
-              Recovered Cases: {country.recovered}
-              <br />
-              Deaths: {country.deaths}
-            </Popup>
-          </Marker>
-        ))}
-    </MapContainer> */}
-
-
-
-
-
-
-
-
+        </section>
+      )}
     </main>
   );
 };
