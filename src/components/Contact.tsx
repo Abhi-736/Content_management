@@ -15,7 +15,7 @@ const Contact: React.FC = () => {
   const [isinputOpen, setisinputOpen] = React.useState<boolean>(false);
 
   const { contacts,isInputFormOpen } = useSelector((store: StoreState) => store.contact);
-  /* const { changeIsInputOpen } = useSelector((store: StoreState) => store.changeIsInputOpen); */
+ 
   const dispatch = useDispatch();
   return (
     <>
@@ -121,8 +121,6 @@ const ShowContact = (props: ContactT) => {
     props.contact
   );
   const dispatch = useDispatch();
-  /* console.log(props.contact);
-  console.log(props.name); */
   const [isEdit, setisEdit] = React.useState<boolean>(false);
 
   const handleEdit = () => {
@@ -141,7 +139,7 @@ const ShowContact = (props: ContactT) => {
   };
 
   return (
-    <section className="flex flex-col gap-2 p-2 border justify-around rounded-md">
+    <section className="flex flex-col p-2 border justify-around rounded-md">
       {isEdit ? (
         <form className="flex flex-col align-middle gap-2 justify-center" onSubmit={(e) => handleEditSubmit(e)}>
           <input className="text-center"
@@ -163,7 +161,7 @@ const ShowContact = (props: ContactT) => {
           </button>
         </form>
       ) : (
-        <>
+        <main className="flex flex-col gap-3">
           <div className="flex gap-1">Name: {props.name}</div>
           <div className="flex gap-1">Number: {props.contact}</div>
           <div className=" flex gap-2 justify-around">
@@ -177,7 +175,7 @@ const ShowContact = (props: ContactT) => {
               Delete
             </button>
           </div>
-        </>
+        </main>
       )}
     </section>
   );

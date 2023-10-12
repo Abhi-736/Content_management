@@ -1,46 +1,49 @@
-# Getting Started with Create React App
+To run this contact management app with charts and maps, you'll need to follow these steps:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Prerequisites:
 
-## Available Scripts
+1-Make sure you have Node.js and npm installed on your machine.
+2-You should have your API endpoint configured for the COVID-19 data.
 
-In the project directory, you can run:
+Here's a brief documentation on how to run the app:
 
-### `npm start`
+1-Clone the Repository:
+*If you haven't already, clone your project repository to your local machine.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+2-Install Dependencies:
+*Open your terminal and navigate to the project directory.
+*Run npm install to install all the required dependencies.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+3-Configure API Endpoint:
+*Make sure you have the API endpoint for COVID-19 data properly configured in your ChartsMaps.tsx file.
+*Check that the URL provided in the fetch functions in the ChartsMaps.tsx file is correct. It should point to the COVID-19 data API.
 
-### `npm test`
+4-Run the Application:
+*In the terminal, run npm start to start the development server.
+*This will compile your React application and open it in your default web browser.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+5-Explore the Application:
+*You can navigate the app using the menu in the sidebar:
+-"Contact" for managing contacts.
+-"Charts and Maps" for viewing COVID-19 data charts and maps.
 
-### `npm run build`
+6-Contact Management:
+*The "Contact" section allows you to create, edit, and delete contacts.
+*Click "Add Contact" to add a new contact.
+*Click "Edit" to edit an existing contact.
+*Click "Delete" to delete a contact.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+7-Charts and Maps:
+*The "Charts and Maps" section displays COVID-19 data.
+*You can select between "Covid Cases," "Recovered Cases," and "Death Cases" using radio buttons.
+*Charts and maps will update based on your selection.
+*The maps will display markers for different countries with COVID-19 data.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+8-Sidebar Menu:
+*You can open and close the sidebar by clicking the menu icon in the top-left corner.
+*The sidebar allows you to navigate between sections of the app.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+9-Interact with Charts and Maps:
+*Interact with the charts and maps to explore COVID-19 data visually.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Note: The app uses React with Redux for contact management and React-Query for fetching COVID-19 data.

@@ -26,24 +26,9 @@ const ChartsMaps = () => {
     Legend
   );
 
-  interface chartData {
-    [date: string]: number;
-  }
-
-  interface chartType {
-    cases?: chartData;
-    deaths?: chartData;
-    recovered?: chartData;
-  }
-
   const url = "https://disease.sh/v3/covid-19/";
 
-  const [covidStats, setcovidStats] = React.useState<chartType[] | undefined[]>(
-    []
-  );
-  const [showRecovered, setShowRecovered] = React.useState<boolean>(false);
-  const [showDeath, setShowDeath] = React.useState<boolean>(false);
-  const [showCases, setShowCases] = React.useState<boolean>(true);
+  const [CasesSelected, setCasesSelected]= React.useState<string>('Covid Cases')
   const [dataObject, setDataObject] = React.useState<any>(null);
   const [Loading, setLoading] = React.useState<boolean>(true);
 
@@ -52,10 +37,9 @@ const ChartsMaps = () => {
     covidData
       .then((res) => res.json())
       .then((value) => {
-        setcovidStats(value);
         setLoading(true);
 
-        if (value.cases && showCases) {
+        if (value.cases && CasesSelected==='Covid Cases') {
           const CasesDates: string[] = Object.keys(value.cases);
           const AllCases: number[] = Object.values(value.cases); //for all covid cases
 
@@ -75,9 +59,9 @@ const ChartsMaps = () => {
           };
           setDataObject(Dataset);
           setLoading(false);
-        } else if (value.deaths && showDeath) {
+        } else if (value.deaths && CasesSelected==='Death Cases') {
           const deathsDates: string[] = Object.keys(value.deaths);
-          const deathsCases: number[] = Object.values(value.deaths); //for all covid cases
+          const deathsCases: number[] = Object.values(value.deaths); //for all deaths
 
           const labels = deathsDates;
 
@@ -95,9 +79,9 @@ const ChartsMaps = () => {
           };
           setDataObject(Dataset);
           setLoading(false);
-        } else if (value.recovered && showRecovered) {
+        } else if (value.recovered && CasesSelected==='Recovered Cases') {
           const recoveredDates: string[] = Object.keys(value.recovered);
-          const recoveredCases: number[] = Object.values(value.recovered); //for all covid cases
+          const recoveredCases: number[] = Object.values(value.recovered); //for all recoveries
 
           const labels = recoveredDates;
 
@@ -120,9 +104,9 @@ const ChartsMaps = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [showCases, showRecovered, showDeath]);
+  }, [CasesSelected]);
 
-  /* console.log(dataObject); */
+  
   const option = {
     responsive: true,
     plugins: {
@@ -136,6 +120,10 @@ const ChartsMaps = () => {
     },
   };
 
+  const handleValueChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    setCasesSelected(e.target.value)//changing radio inputs
+  }
+
 //-----Start Maps------//
 
   interface CountryInfo {
@@ -146,6 +134,7 @@ const ChartsMaps = () => {
     long: number;
     flag: string;
   }
+
 
   interface CountryData {
     updated: number;
@@ -186,13 +175,13 @@ const ChartsMaps = () => {
     data: countryData,
     error: mapError,
     isLoading: mapIsLoaded,
-  } = useQuery("countryData", fetchCountryData);//fetch data using useQuery hook
+  } = useQuery("countryData", fetchCountryData);//fetching data using useQuery hook
 
   console.log(countryData);
 
   const defaultIcon = new Icon({
     iconUrl:
-      "https://www.iconpacks.net/icons/2/free-location-icon-2955-thumb.png", // Replace with the actual path to your marker icon
+      "https://www.iconpacks.net/icons/2/free-location-icon-2955-thumb.png", 
     iconSize: [25, 25], // The size of the icon
     iconAnchor: [12, 41], // The anchor point of the icon
     popupAnchor: [1, -34], // The anchor point for popups
@@ -202,55 +191,56 @@ const ChartsMaps = () => {
   
 
   return (
-    <main className="w-3/4 m-3 text-center h-auto flex flex-col align-middle justify-center mx-auto gap-2">
-      {Loading ? (
-        !showCases && !showRecovered && !showDeath && <p>Select one</p>
+    <main className="w-5/6 m-3 text-center h-auto flex flex-col align-middle justify-center sm:w-3/4 mx-auto gap-2">
+      <p className="p-3 absolute top-0 left-0 right-0 text-3xl font-medium bg-slate-400 w-full text-center">
+          Charts and Maps
+        </p>
+      {Loading ? ( <p>Loading.....</p>
       ) : (
-        <Line data={dataObject} options={option}></Line>
+        <Line className="mt-16" data={dataObject} options={option}></Line>//Line graph
       )}
       <div className="flex gap-2 justify-center ">
         <label className="pe-1">
           <input
-            type="checkbox"
-            name="Covid Cases"
-            checked={showCases}
-            onChange={() => {
-              setShowCases((value) => !value);
-            }}
+            type="radio"
+            name="Cases"
+            value="Covid Cases"
+            checked={CasesSelected==="Covid Cases"}
+            onChange={handleValueChange}
           />
           Covid Cases
         </label>
 
         <label className="pe-1">
           <input
-            type="checkbox"
-            name="Recovered"
-            checked={showRecovered}
-            onChange={() => {
-              setShowRecovered((value) => !value);
-            }}
+            type="radio"
+            name="Cases"
+            value="Recovered Cases"
+            checked={CasesSelected==="Recovered Cases"}
+            onChange={handleValueChange}
           />
           Recovered
         </label>
 
         <label className="pe-1">
           <input
-            type="checkbox"
-            name="Deaths"
-            checked={showDeath}
-            onChange={() => {
-              setShowDeath((value) => !value);
-            }}
+            type="radio"
+            name="Cases"
+            value="Death Cases"
+            checked={CasesSelected==="Death Cases"}
+            onChange={handleValueChange}
           />
           Deaths
         </label>
-      </div>
+      </div> 
+
+
       {mapError ? (
         <p>Error: {(mapError as Error).message}</p>
       ) : mapIsLoaded ? (
         <p>Loading...</p>
-      ) : (<section className="flex-col gap-2">
-        <h2>Map</h2>
+      ) : (<section className="flex-col flex gap-5 m-5 mt-6 z-0">
+        <h2 className="text-md font-medium">Countries with total Covid cases, Recoveries and Deaths</h2>
         <MapContainer
           center={[20.5937, 78.9629]}
           zoom={2}
