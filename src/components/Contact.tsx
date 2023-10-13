@@ -1,21 +1,23 @@
 import React from "react";
 
-import { StoreState, AppDispatch } from "../Redux/store";
+import { StoreState } from "../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addContact,
   editContact,
   changeIsInputOpen,
   ContactT,
-  deleteContact
+  deleteContact,
 } from "../Redux/contactSlice";
-import { ImCross} from 'react-icons/im';
+import { ImCross } from "react-icons/im";
 
 const Contact: React.FC = () => {
   const [isinputOpen, setisinputOpen] = React.useState<boolean>(false);
 
-  const { contacts,isInputFormOpen } = useSelector((store: StoreState) => store.contact);
- 
+  const { contacts, isInputFormOpen } = useSelector(
+    (store: StoreState) => store.contact
+  );
+
   const dispatch = useDispatch();
   return (
     <>
@@ -35,11 +37,11 @@ const Contact: React.FC = () => {
                 </section>
               )}
               <div className=" rounded-md p-2 ">
-                <button className="w-full h-full  text-center p-1 rounded-md text-slate-50 bg-slate-950 hover:scale-90 transition-all"
+                <button
+                  className="w-full h-full  text-center p-1 rounded-md text-slate-50 bg-slate-950 hover:scale-90 transition-all"
                   onClick={() => {
                     dispatch(changeIsInputOpen(true));
                   }}
-                 
                 >
                   Add Contact
                 </button>
@@ -52,8 +54,8 @@ const Contact: React.FC = () => {
               <InputForm />
             ) : (
               <button
-                className="p-3 bg-grey color:white hover:bg-slate-300"
-                onClick={() => setisinputOpen(true) }
+                className="p-3 bg-slate-300 color:white hover:bg-slate-300 hover:scale-95 transition"
+                onClick={() => setisinputOpen(true)}
               >
                 Create Contact
               </button>
@@ -68,8 +70,8 @@ const Contact: React.FC = () => {
 export default Contact;
 
 const InputForm = () => {
-  const [Name, setName] = React.useState<string | undefined>();
-  const [Number, setNumber] = React.useState<number | undefined>();
+  const [Name, setName] = React.useState<string | undefined>("");
+  const [Number, setNumber] = React.useState<any>(undefined);
   const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -82,9 +84,17 @@ const InputForm = () => {
     dispatch(addContact(newContact));
     dispatch(changeIsInputOpen(false));
   };
+
   return (
-    <div className="w-auto p-2 rounded-md border h-auto relative" >
-      <button className="absolute p-1 right-1 top-1 text-slate-300 bg-black hover:scale-90 transition-all" onClick={()=>{dispatch(changeIsInputOpen(false))}}><ImCross/></button>
+    <div className="w-auto p-2 rounded-md border h-auto relative">
+      <button
+        className="absolute p-1 right-1 top-1 text-slate-300 bg-black hover:scale-90 transition-all"
+        onClick={() => {
+          dispatch(changeIsInputOpen(false));
+        }}
+      >
+        <ImCross />
+      </button>
       <form className="flex flex-col" onSubmit={handleSubmit}>
         <label className="p-1">Name</label>
         <input
@@ -101,11 +111,12 @@ const InputForm = () => {
           placeholder="Number"
           value={Number}
           type="number"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setNumber(parseInt(e.target.value));
-          }}
+          onChange={(e) => setNumber(e.target.value)}
         />
-        <button type="submit" className="p-1 rounded-md">
+        <button
+          type="submit"
+          className="p-1 bg-black text-slate-100 hover:scale-95 transition rounded-md"
+        >
           Submit
         </button>
       </form>
@@ -117,9 +128,7 @@ const ShowContact = (props: ContactT) => {
   const [editedName, seteditedName] = React.useState<string | undefined>(
     props.name
   );
-  const [editedContact, seteditedContact] = React.useState<number | undefined>(
-    props.contact
-  );
+  const [editedContact, seteditedContact] = React.useState<any>(props.contact);
   const dispatch = useDispatch();
   const [isEdit, setisEdit] = React.useState<boolean>(false);
 
@@ -141,19 +150,28 @@ const ShowContact = (props: ContactT) => {
   return (
     <section className="flex flex-col p-2 border justify-around rounded-md">
       {isEdit ? (
-        <form className="flex flex-col align-middle gap-2 justify-center" onSubmit={(e) => handleEditSubmit(e)}>
-          <input className="text-center"
+        <form
+          className="flex flex-col align-middle gap-2 justify-center"
+          onSubmit={(e) => handleEditSubmit(e)}
+        >
+          <input
+            className="text-center"
             placeholder="Name"
             value={editedName}
             onChange={(e) => {
               seteditedName(e.target.value);
             }}
           />
-          <input className="text-center"
+          <input
+            className="text-center"
             placeholder="Number"
-            value={editedContact}
+            value={editedContact ? editedContact.toString() : undefined}
             onChange={(e) => {
-              seteditedContact(parseInt(e.target.value));
+              if (e.target.value === undefined) {
+                seteditedContact(undefined);
+              } else {
+                seteditedContact(e.target.value);
+              }
             }}
           />
           <button className="p-1 bg-slate-800 rounded-md text-slate-100 hover:scale-90 transition-all">
@@ -171,7 +189,10 @@ const ShowContact = (props: ContactT) => {
             >
               Edit
             </button>
-            <button onClick={()=>dispatch(deleteContact(props.id))} className="p-1 bg-slate-800 rounded-md text-slate-100 px-3 hover:scale-90 transition-all">
+            <button
+              onClick={() => dispatch(deleteContact(props.id))}
+              className="p-1 bg-slate-800 rounded-md text-slate-100 px-3 hover:scale-90 transition-all"
+            >
               Delete
             </button>
           </div>

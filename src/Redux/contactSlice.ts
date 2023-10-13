@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface ContactT {
   id: number;
   name: string|undefined;
-  contact: number|undefined;
+  contact: any;
 }
 interface ContactState {
   contacts: ContactT[];
@@ -25,7 +25,7 @@ const contactSlice = createSlice({
     },
     editContact: (
       state,
-      action: PayloadAction<{ id: number; name: string|undefined; contact: number |undefined}>
+      action: PayloadAction<{ id: number; name: string|undefined; contact: any}>
     ) => {
       const { id, name, contact } = action.payload;
       const contactExist = state.contacts.find(
